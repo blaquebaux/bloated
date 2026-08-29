@@ -18,6 +18,7 @@
 #   XLE  energy — the anti-tech sector                    IWD  large-cap VALUE (the momentum opposite)
 #   TLT  long Treasuries — duration/flight-to-safety      DBC  broad commodities
 #   UUP  US dollar — risk-off haven                       EFA  developed ex-US equity
+#   XLF  financials sector — outside QQQ, but still equity beta
 # Alpaca SIP daily, causal, gross. Read-only.
 # =============================================================================
 import os, sys, json, urllib.request
@@ -33,7 +34,7 @@ def bars(s):
 
 CANDS=["GLD","XLE","TLT","UUP","MFT_BASKET","IWD","DBC","EFA"]   # MFT synthesized below
 MFT=["SPY","IEF","GLD","DBC","TLT","UUP","EEM","HYG","VNQ"]      # managed-futures trend universe
-RAW=["NVDA","QQQ","GLD","XLE","TLT","UUP","IWD","DBC","EFA"]+MFT
+RAW=["NVDA","QQQ","GLD","XLE","TLT","UUP","IWD","DBC","EFA","XLF"]+MFT
 RAW=sorted(set(RAW))
 TR={s:bars(s) for s in RAW}
 dates=sorted(set.intersection(*[set(TR[s]) for s in RAW]))
@@ -53,7 +54,8 @@ MFT_stream=mf_trend()
 
 NVDA=R["NVDA"][WARM:]; QQQ=R["QQQ"][WARM:]
 STREAMS={"GLD":R["GLD"][WARM:],"XLE":R["XLE"][WARM:],"TLT":R["TLT"][WARM:],"UUP":R["UUP"][WARM:],
-         "MF-trend":MFT_stream[WARM:],"IWD":R["IWD"][WARM:],"DBC":R["DBC"][WARM:],"EFA":R["EFA"][WARM:]}
+         "MF-trend":MFT_stream[WARM:],"IWD":R["IWD"][WARM:],"DBC":R["DBC"][WARM:],"EFA":R["EFA"][WARM:],
+         "XLF":R["XLF"][WARM:]}
 
 crash = NVDA <= np.percentile(NVDA,5)          # NVDA's worst-5% days — the days a counterweight must earn its keep
 def ann_vol(x): return x.std()*sqrt(252)
@@ -67,7 +69,7 @@ print("="*104)
 print(f"\n  {'candidate':11}{'corr QQQ':>10}{'corr NVDA':>11}{'CRISIS corr':>13}{'own Sh':>9}{'own ret%':>10}   what it is")
 tags={"GLD":"gold (real diversifier)","XLE":"energy (anti-tech)","TLT":"long Treasuries",
       "UUP":"US dollar (haven)","MF-trend":"managed-futures trend","IWD":"large-cap value",
-      "DBC":"broad commodities","EFA":"developed ex-US"}
+      "DBC":"broad commodities","EFA":"developed ex-US","XLF":"financials sector"}
 rows=[]
 for nm,x in STREAMS.items():
     cq=np.corrcoef(x,QQQ)[0,1]; cn=np.corrcoef(x,NVDA)[0,1]

@@ -77,6 +77,32 @@ for nm,bl in tests:
     m=riskadj(bl,QQQ); md=stats(bl)
     print(f"  {nm:26}{m['sh']:>+8.2f}{m['sh']-bn['sh']:>+8.2f}{md['cagr']*100:>+7.0f}%{md['dd']*100:>+8.0f}%{(md['dd']-base['dd'])*100:>+8.0f}%")
 
+# (4) YQQQ — the newer inverse-QQQ INCOME product; run on ITS OWN short window, flagged honestly ----------
+# YQQQ (Defiance Daily Target inverse-QQQ with an option-income overlay) only lists from 2024-08, so it has
+# NO crash in its life. We report it separately over its own overlap and DO NOT pretend the 2017-sample
+# conclusions transfer — data honesty: flag the gap, don't fake the history.
+_yq=bars("YQQQ"); _ovl=sorted(set(_yq)&set(TR["QQQ"])&set(TR["NVDA"])&set(TR["GLD"]))
+if len(_ovl)>60:
+    yq=np.array([_yq[d] for d in _ovl]);   ryq=yq[1:]/yq[:-1]-1
+    qq=np.array([TR["QQQ"][d] for d in _ovl]); rqq=qq[1:]/qq[:-1]-1
+    nv=np.array([TR["NVDA"][d] for d in _ovl]); rnv=nv[1:]/nv[:-1]-1
+    gl=np.array([TR["GLD"][d]  for d in _ovl]); rgl=gl[1:]/gl[:-1]-1
+    b_yq=np.cov(ryq,rqq)[0,1]/np.var(rqq); c_yq=np.corrcoef(ryq,rqq)[0,1]; cn_yq=np.corrcoef(ryq,rnv)[0,1]
+    s_yq=stats(ryq)
+    print(f"\n(4) YQQQ — newer inverse-QQQ INCOME ETF, on its OWN window {_ovl[0]}→{_ovl[-1]} ({len(_ovl)} days)")
+    print( "    ⚠ SHORT, CRASH-FREE SAMPLE — this is a weaker test than PSQ/SQQQ; do NOT read it as a full cycle.")
+    print(f"    realized beta to QQQ {b_yq:+.2f} (income overlay softens the short), corr {c_yq:+.2f}, corr NVDA {cn_yq:+.2f}")
+    print(f"    standalone over the window: total return {(np.cumprod(1+ryq)[-1]-1)*100:+.0f}%, maxDD {s_yq['dd']*100:+.0f}%")
+    # same-window benchmarks so the comparison is apples-to-apples
+    def _rp(a,b): va,vb=a.std(),b.std(); s=va/vb if vb>0 else 0; return 0.5*a+0.5*s*b
+    for nm,x in [("NVDA + 50/50 YQQQ",_rp(rnv,ryq)),("NVDA + 50/50 GLD (same window)",_rp(rnv,rgl))]:
+        m=stats(x); print(f"    {nm:32}Sharpe {m['sh']:+.2f}  CAGR {m['cagr']*100:+.0f}%  maxDD {m['dd']*100:+.0f}%")
+    print("    → same verdict as PSQ/SQQQ even WITH the income cushion: it lost money short-QQQ into a rising")
+    print("      tape, and it never saw a crash to justify the carry. An income overlay softens the bleed; it")
+    print("      does not turn a structural short into a positive-return diversifier. Gold still wins the window.")
+else:
+    print("\n(4) YQQQ — insufficient overlapping history to test.")
+
 print("\n"+"="*100)
 print("READ:")
 print("  • PSQ/SQQQ give you the PERFECT negative correlation (~-0.9 / -0.9 to NVDA, strongly negative in the")
@@ -89,6 +115,9 @@ print("    is the TLT trap (bloated_2) in its purest form: a hedge with large NE
 print("    sleeve law (uncorrelated is necessary, POSITIVE-return is not optional).")
 print("  • Contrast gold, kept in the table on purpose: same job (cut the crater) but it PAYS you to hold it, so")
 print("    the blend Sharpe goes UP, not down. That is the whole difference between a diversifier and a short.")
+print("  • YQQQ (the income-overlay inverse) is the same trap with a cushion: on its short, crash-free 2024+ life it")
+print("    still LOST money shorting a rising QQQ. The option income softens the daily-reset bleed but cannot make")
+print("    a structural short pay — and its sample never contained the crash that would be its only case for existing.")
 print("  VERDICT: NO. An inverse-QQQ ETF does not counteract the bloat — it converts it into a slow bleed. If you")
 print("  ever want QQQ-crash protection specifically, buy it as a SMALL, TIMED, regime-gated overlay you turn OFF")
 print("  in up-regimes (what bastion's bear overlay does), never a buy-and-hold PSQ/SQQQ line. Match signal to sleeve.")
