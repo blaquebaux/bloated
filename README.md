@@ -117,6 +117,34 @@ fails the [outside-sleeve law](https://github.com/blaquebaux/breakthrough) exact
 want QQQ-crash protection *specifically*, it must be a small, timed, regime-gated overlay you turn off in up-regimes
 (what [bastion](https://github.com/blaquebaux/bastion)'s bear overlay does) — never a buy-and-hold inverse line.
 
+## The synthesis — does mixing all of it on a capstone resolve the issue?
+
+The natural last question: throw everything in the pot — the rocket (1), the counterweight (2), *and* the inverse
+hedge (3) — on top of a diversified capstone. Does the mess finally resolve?
+**[`research/bloated_4_synthesis.py`](research/bloated_4_synthesis.py)** stacks them by risk budget on a
+[breakthrough](https://github.com/blaquebaux/breakthrough) core, and the honest answer lives in the gap between
+**Sharpe** and **wealth**:
+
+| blend | Sharpe | CAGR | $1 → | maxDD | M²exc |
+|---|---|---|---|---|---|
+| CORE (capstone alone) | +1.17 | +11% | 2.7x | −17% | +5.2% |
+| + (1) NVDA | +1.25 | +13% | 3.3x | −19% | +6.7% |
+| **+ (1)+(2) NVDA + counterweight** | **+1.31** | **+15%** | **3.9x** | −19% | +7.9% |
+| + (1)+(2)+(3) full mix | +1.35 | +14% | 3.4x | −17% | +8.5% |
+| equal-risk kitchen sink | **+1.49** | +10% | **2.5x** | **−9%** | +11.0% |
+
+**On Sharpe it looks resolved** — every addition raises it, and the equal-risk kitchen sink posts the best Sharpe
+(+1.49) and shallowest drawdown (−9%). **On wealth it inverts:** that kitchen sink makes you *poorer than the plain
+capstone* (2.5x vs 2.7x) — its gaudy Sharpe is bought by **de-risking, not by adding return.** A higher Sharpe with
+less money isn't a resolution; it's a smaller bet in a nicer outfit. (This is exactly why the family scores on
+M²/alpha, not Sharpe alone.)
+
+Marginal wealth per ingredient tells you which is which: **+NVDA +0.59x**, **+counterweight +0.64x**, **+inverse
+−0.56x.** Only (1) and (2) add money; (3) lifts Sharpe *only* by cutting drawdown and subtracts terminal wealth
+every time. The book that actually grows the most at a capstone-grade Sharpe is **(1)+(2) on the capstone** —
+3.9x, +15% CAGR, Sharpe +1.31. **So: does the full mix resolve it? On paper yes, in your account no.** More
+ingredients is the definition of the word on the repo — add the garnish, keep the capstone, and stop.
+
 ## The honest way to have the bet
 
 If you want the AI-compute beta, take it **honestly**: a small, sized, *disclosed* single-name tilt on top of a
@@ -134,6 +162,7 @@ engine/     the Blaque Baux platform (git submodule -> blaquebaux/base)
 research/   bloated_1_nvidia_mix.py    — the NVDA-into-the-capstones study (the null)
             bloated_2_counterweight.py — what outside QQQ counteracts it (gold + trend = a capstone)
             bloated_3_inverse.py       — inverse QQQ (PSQ/SQQQ/YQQQ): perfect corr, worthless return
+            bloated_4_synthesis.py     — mixing (1)+(2)+(3) on a capstone: resolves on Sharpe, not on wealth
 ```
 
 ## The Blaque Baux family
