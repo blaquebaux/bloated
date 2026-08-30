@@ -75,6 +75,48 @@ null gives the prettiest headline (+1.36) and the least honesty — a broad shor
 - **A past-return bet.** "NVDA moves the market" is a statement about 2023–2025. The capstones are built
   regime-agnostic precisely so they don't depend on that sentence staying true.
 
+## The counterweight studies — can anything outside QQQ fix it?
+
+If NVDA's flaw is that it's already-owned tech beta, the obvious next question is: what *outside* the QQQ complex
+counteracts it? Two follow-ups run that down, and both re-derive the family's own keepers.
+
+**[`research/bloated_2_counterweight.py`](research/bloated_2_counterweight.py)** — nine candidates outside QQQ,
+each blended 50/50 (risk-parity) with NVDA, ranked on whether the crater shrinks while the return survives:
+
+| NVDA + … | Sharpe | ΔSh | CAGR | maxDD | verdict |
+|---|---|---|---|---|---|
+| **GLD** (gold) | +1.39 | **+0.21** | +55% | **−51%** | ✅ uncorrelated *and* pays you — the real counterweight |
+| **MF-trend** (managed futures) | +1.26 | +0.09 | +47% | −49% | ✅ crisis-negative *and* positive carry |
+| UUP (dollar) | +1.14 | −0.03 | +39% | −40% | haven — cuts DD most, but thin carry |
+| DBC / XLF / IWD / XLE / EFA | +1.02–1.13 | negative | — | −57 to −66% | ❌ positive but too **equity-correlated** to offset a tech crater |
+| TLT (long bonds) | +0.86 | **−0.32** | +26% | **−71%** | ❌ crisis-negative but zero carry → *deepens* the crater |
+
+The dividing line: a counterweight must sit outside **equity beta**, not just outside the tech sector. Only **gold**
+and **managed-futures trend** clear it — which is exactly the [cross-asset keeper book](https://github.com/blaquebaux/base)
+and [balsamic](https://github.com/blaquebaux/balsamic)'s satellite. *Counterweighting NVDA back to sanity just
+rebuilds a capstone around it.*
+
+**[`research/bloated_3_inverse.py`](research/bloated_3_inverse.py)** — the tempting shortcut: buy the *perfect*
+negative. PSQ (−1× QQQ), SQQQ (−3× QQQ), and YQQQ (inverse-QQQ with an income overlay) all deliver textbook
+−1.00 / −0.94 correlation to QQQ — and all fail, because a perfect inverse is a perfect return-incinerator:
+
+| | corr QQQ | Sharpe | CAGR | maxDD |
+|---|---|---|---|---|
+| PSQ (−1×) | −1.00 | −0.79 | −19% | −87% |
+| SQQQ (−3×) | −1.00 | −0.85 | **−55%** | **−100%** |
+| YQQQ (inverse+income)\* | −0.94 | — | −16%\* | −29%\* |
+
+Two layers of negative carry — the **structural short** (you're short an asset with positive drift) and the
+**daily-reset volatility decay** (each bleeds an extra ~3%/yr vs a naive continuous short). Every inverse blend
+trades return for drawdown at a punishing rate; 50/50 PSQ collapses NVDA's Sharpe +1.17 → +0.57. The income overlay
+on YQQQ softens the bleed but can't make a structural short pay. *(\*YQQQ lists only from 2024-08 — a short,
+crash-free sample, flagged in the code; a weaker test than PSQ/SQQQ, not read as a full cycle.)*
+
+Same lesson both ways: **uncorrelated is necessary, positive-return is not optional.** A short with negative carry
+fails the [outside-sleeve law](https://github.com/blaquebaux/breakthrough) exactly as a tail hedge does. If you ever
+want QQQ-crash protection *specifically*, it must be a small, timed, regime-gated overlay you turn off in up-regimes
+(what [bastion](https://github.com/blaquebaux/bastion)'s bear overlay does) — never a buy-and-hold inverse line.
+
 ## The honest way to have the bet
 
 If you want the AI-compute beta, take it **honestly**: a small, sized, *disclosed* single-name tilt on top of a
@@ -89,7 +131,9 @@ directory and no allocator, by design. The red scorecard is the point.
 ## Layout
 ```
 engine/     the Blaque Baux platform (git submodule -> blaquebaux/base)
-research/   bloated_1_nvidia_mix.py — the NVDA-into-the-capstones study (the null)
+research/   bloated_1_nvidia_mix.py    — the NVDA-into-the-capstones study (the null)
+            bloated_2_counterweight.py — what outside QQQ counteracts it (gold + trend = a capstone)
+            bloated_3_inverse.py       — inverse QQQ (PSQ/SQQQ/YQQQ): perfect corr, worthless return
 ```
 
 ## The Blaque Baux family
